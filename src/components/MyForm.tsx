@@ -15,6 +15,7 @@ const MyFormSchema: z.ZodSchema<MyFormValues> = z
     email: z.string().nonempty('E-Mail is required'),
     userName: z
       .string()
+      .nonempty('Username is required')
       .refine(
         (value) => value !== 'christian.hoeppner@pwc.com',
         'May not use myself'
@@ -29,8 +30,8 @@ const MyFormSchema: z.ZodSchema<MyFormValues> = z
       .max(32, 'Must be 32 or less'),
   })
   .refine((data) => data.userName !== data.email, {
-    message: 'may not use username as e-mail',
-    path: ['userName'], // path of error
+    message: 'May not use username as e-mail',
+    path: ['userNameRefined'], // path of error
   });
 
 export const MyForm = () => {
@@ -43,32 +44,45 @@ export const MyForm = () => {
 
   console.log('ERRORS:', errors);
 
-  // errors.myCustomError
-
   return (
-    <div>
+    <div className='w-1/2 my-16'>
       <form noValidate onSubmit={handleSubmit(submitHandler)}>
         <label>
           E-Mail
           <input type='text' {...register('email')} />
-          {errors?.email && <p>{(errors.email as FieldError).message}</p>}
+          {errors?.email && (
+            <p className='error'>{(errors.email as FieldError).message}</p>
+          )}
         </label>
         <label>
           UserName
           <input type='text' {...register('userName')} />
-          {errors?.userName && <p>{(errors.userName as FieldError).message}</p>}
+          {errors?.userName && (
+            <p className='error'>{(errors.userName as FieldError).message}</p>
+          )}
+          {errors?.userNameRefined && (
+            <p className='error'>
+              {(errors.userNameRefined as FieldError).message}
+            </p>
+          )}
         </label>
         <label>
           Password
           <input type='password' {...register('password')} />
-          {errors?.password && <p>{(errors.password as FieldError).message}</p>}
+          {errors?.password && (
+            <p className='error'>{(errors.password as FieldError).message}</p>
+          )}
         </label>
         <label>
           Age
           <input type='number' {...register('age')} />
-          {errors?.age && <p>{(errors.age as FieldError).message}</p>}
+          {errors?.age && (
+            <p className='error'>{(errors.age as FieldError).message}</p>
+          )}
         </label>
-        <button type='submit'>Submit</button>
+        <button className='p-2 bg-purple-500 rounded' type='submit'>
+          Submit
+        </button>
       </form>
       <DevTool control={control} />
     </div>
